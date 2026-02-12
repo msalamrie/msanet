@@ -3,256 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nama Website</title>
+    <title>msanet</title>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f8;
-            color: #333;
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            background: #1e3a8a;
-            color: #fff;
-            padding: 15px 20px;
-        }
-
-        header h1 {
-            font-size: 24px;
-        }
-
-        /* ===== NAVBAR ===== */
-        nav {
-            background: #334155;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        nav ul li a:hover {
-            color: #93c5fd;
-        }
-
-        .menu-toggle {
-            display: none;
-            font-size: 22px;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        /* ===== BANNER ===== */
-        .banner {
-            background: linear-gradient(to right, #1e40af, #64748b);
-            color: #fff;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .banner h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .banner p {
-            font-size: 18px;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .content {
-            width: 80%;
-        }
-
-        .content .card {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .content h3 {
-            margin-bottom: 10px;
-            color: #1e3a8a;
-        }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            width: 20%;
-        }
-
-        .sidebar .box {
-            background: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .sidebar h4 {
-            margin-bottom: 10px;
-            color: #1e3a8a;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar ul li {
-            margin-bottom: 8px;
-        }
-
-        .sidebar ul li i {
-            margin-right: 8px;
-            color: #2563eb;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background: #1f2933;
-            color: #fff;
-            text-align: center;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            nav ul {
-                display: none;
-                flex-direction: column;
-                background: #334155;
-                position: absolute;
-                top: 110px;
-                left: 0;
-                width: 100%;
-                padding: 15px;
-            }
-
-            nav ul.active {
-                display: flex;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .container {
-                flex-direction: column;
-            }
-
-            .content,
-            .sidebar {
-                width: 100%;
-            }
-        }
-    </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <h1><i class="fa-solid fa-globe"></i> Nama Website</h1>
-    </header>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="wrapper nav-container">
 
-    <!-- NAVBAR -->
-    <nav>
-        <div class="menu-toggle" onclick="toggleMenu()">
+        <div class="brand">
+            <i class="fa-solid fa-globe"></i>
+            <span>msanet</span>
+        </div>
+
+        <ul class="menu" id="menu">
+            <li><a class="active" href="index.html"><i class="fa fa-home"></i> Home</a></li>
+            <li><a href="artikel.html"><i class="fa fa-newspaper"></i> Artikel</a></li>
+            <li><a href="kategori.html"><i class="fa fa-folder"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa fa-envelope"></i> Kontak</a></li>
+        </ul>
+
+        <div class="menu-toggle" id="menuToggle">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <ul id="menu">
-            <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
-            <li><a href="#"><i class="fa fa-newspaper"></i> Artikel</a></li>
-            <li><a href="#"><i class="fa fa-folder"></i> Kategori</a></li>
-            <li><a href="#"><i class="fa fa-envelope"></i> Kontak</a></li>
-        </ul>
-    </nav>
 
-    <!-- BANNER -->
-    <section class="banner">
-        <h2>Selamat Datang di Website Kami</h2>
-        <p>Tempat berbagi informasi, artikel, dan inspirasi</p>
-    </section>
+    </div>
+</nav>
 
-    <!-- MAIN -->
+<!-- HERO / BANNER -->
+<section class="banner">
+    <div class="wrapper">
+        <h2>Belajar & Membangun Website dengan Cara yang Tepat</h2>
+        <p>Dokumentasi, artikel, dan panduan seputar pengembangan website modern</p>
+        <a href="artikel.html" class="btn-primary" style="display:inline-block;margin-top:10px;">
+            Lihat Semua Artikel →
+        </a>
+    </div>
+</section>
+
+<!-- MAIN -->
+<main class="wrapper main-content">
     <div class="container">
-        <!-- CONTENT -->
-        <div class="content">
-            <div class="card">
-                <h3><i class="fa fa-pen"></i> Judul Konten 1</h3>
-                <p>
-                    Ini adalah contoh konten utama website.  
-                    Konten ini bisa berupa artikel, berita, atau postingan lainnya.
-                </p>
-            </div>
 
-            <div class="card">
-                <h3><i class="fa fa-pen"></i> Judul Konten 2</h3>
-                <p>
-                    Anda bisa menambahkan banyak konten di bagian kiri (80%).
-                </p>
+        <!-- CONTENT -->
+        <section class="content">
+            <h2>Artikel Terbaru</h2>
+            <div id="latestContent">
+                <p>Memuat konten terbaru...</p>
             </div>
-        </div>
+        </section>
 
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="box">
-                <h4><i class="fa fa-list"></i> Kategori</h4>
-                <ul>
-                    <li><i class="fa fa-angle-right"></i> Teknologi</li>
-                    <li><i class="fa fa-angle-right"></i> Desain</li>
-                    <li><i class="fa fa-angle-right"></i> Tutorial</li>
-                </ul>
+                <h4><i class="fa fa-lightbulb"></i> Tentang msanet</h4>
+                <p>
+                    msanet adalah website berbagi pengetahuan seputar
+                    pembuatan website statis dan modern dengan pendekatan praktis.
+                </p>
             </div>
 
             <div class="box">
-                <h4><i class="fa fa-star"></i> Rekomendasi</h4>
+                <h4><i class="fa fa-compass"></i> Navigasi</h4>
                 <ul>
-                    <li><i class="fa fa-link"></i> Artikel Populer</li>
-                    <li><i class="fa fa-link"></i> Tips Terbaru</li>
+                    <li><a href="artikel.html">📚 Semua Artikel</a></li>
+                    <li><a href="kategori.html">📂 Kategori</a></li>
+                    <li><a href="kontak.html">✉️ Kontak</a></li>
                 </ul>
             </div>
         </aside>
+
     </div>
+</main>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>© 2026 Nama Website | Dibuat dengan ❤️</p>
-    </footer>
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 msanet | Dibuat dengan ❤️</p>
+</footer>
 
-    <script>
-        function toggleMenu() {
-            document.getElementById("menu").classList.toggle("active");
-        }
-    </script>
+<!-- JS GLOBAL -->
+<script src="assets/js/script.js"></script>
+
+<!-- JS INDEX (LATEST ONLY) -->
+<script>
+    const latestContainer = document.getElementById("latestContent");
+
+    fetch("data/content.json")
+        .then(res => {
+            if (!res.ok) throw new Error("Gagal memuat content.json");
+            return res.json();
+        })
+        .then(data => {
+            if (!data.length) {
+                latestContainer.innerHTML = "<p>Belum ada konten.</p>";
+                return;
+            }
+
+            // Urutkan terbaru
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const latest = data.slice(0, 3); // ambil 3 terbaru
+            latestContainer.innerHTML = "";
+
+            latest.forEach(item => {
+                const card = document.createElement("article");
+                card.className = "card";
+
+                card.innerHTML = `
+                    <h3>${item.title}</h3>
+                    <small><i class="fa fa-calendar"></i> ${item.date || "-"}</small>
+                    <p>${item.excerpt || ""}</p>
+                    <a href="detail.html?id=${item.id}">
+                        Baca selengkapnya →
+                    </a>
+                `;
+
+                latestContainer.appendChild(card);
+            });
+        })
+        .catch(err => {
+            latestContainer.innerHTML = "<p>Gagal memuat konten.</p>";
+            console.error(err);
+        });
+</script>
 
 </body>
 </html>
