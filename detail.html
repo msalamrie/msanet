@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Konten – msanet</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS UTAMA -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- STYLE TAMBAHAN -->
+    <style>
+        /* LIST TEKS */
+        ol.text-list {
+            padding-left: 22px;
+            line-height: 1.8;
+            margin-top: 12px;
+        }
+
+        /* BLOK KODE (TEXT EDITOR LOOK) */
+        pre.code-box {
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        pre.code-box code {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="wrapper nav-container">
+        <div class="brand">
+            <i class="fa-solid fa-globe"></i>
+            <span>msanet</span>
+        </div>
+
+        <ul class="menu">
+            <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- BANNER -->
+<section class="banner">
+    <div class="wrapper">
+        <h2 id="contentTitle">Memuat...</h2>
+    </div>
+</section>
+
+<!-- MAIN -->
+<main class="wrapper main-content">
+    <article class="card" id="contentDetail">
+        <p>Memuat konten...</p>
+    </article>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 msanet</p>
+</footer>
+
+<!-- JS GLOBAL -->
+<script src="assets/js/script.js"></script>
+
+<!-- JS DETAIL -->
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const contentId = params.get("id");
+
+    const titleEl = document.getElementById("contentTitle");
+    const detailEl = document.getElementById("contentDetail");
+
+    /* ================== UTIL ================== */
+    function isCodeLine(line) {
+        return (
+            /<\/?[a-z][\s\S]*>/i.test(line) ||     // HTML
+            /console\.log/.test(line) ||
+            /function\s*\(/.test(line) ||
+            /=>/.test(line) ||
+            /{.*}/.test(line) ||
+            /;/.test(line)
+        );
+    }
+
+    function renderContent(container, content) {
+        if (!content) {
+            container.textContent = "Tidak ada isi konten.";
+            return;
+        }
+
+        const lines = content.split("\n");
+        let textList = document.createElement("ol");
+        textList.className = "text-list";
+        let codeBuffer = [];
+
+        function flushText() {
+            if (textList.children.length > 0) {
+                container.appendChild(textList);
+                textList = document.createElement("ol");
+                textList.className = "text-list";
+            }
+        }
+
+        function flushCode() {
+            if (codeBuffer.length > 0) {
+                const pre = document.createElement("pre");
+                pre.className = "code-box";
+
+                const code = document.createElement("code");
+                code.textContent = codeBuffer.join("\n");
+
+                pre.appendChild(code);
+                container.appendChild(pre);
+                codeBuffer = [];
+            }
+        }
+
+        lines.forEach(line => {
+            if (isCodeLine(line)) {
+                flushText();
+                codeBuffer.push(line);
+            } else if (line.trim() !== "") {
+                flushCode();
+                const li = document.createElement("li");
+                li.textContent = line;
+                textList.appendChild(li);
+            }
+        });
+
+        flushCode();
+        flushText();
+    }
+
+    /* ================== LOAD DATA ================== */
+    if (!contentId) {
+        titleEl.textContent = "Konten tidak ditemukan";
+        detailEl.textContent = "ID konten tidak tersedia.";
+    } else {
+        fetch("data/content.json")
+            .then(res => {
+                if (!res.ok) throw new Error("Gagal memuat data");
+                return res.json();
+            })
+            .then(data => {
+                const item = data.find(d => d.id == contentId);
+
+                if (!item) {
+                    titleEl.textContent = "Konten tidak ditemukan";
+                    detailEl.textContent = "Konten tidak tersedia.";
+                    return;
+                }
+
+                titleEl.textContent = item.title;
+                detailEl.innerHTML = "";
+
+                /* TANGGAL */
+                if (item.date) {
+                    const p = document.createElement("p");
+                    p.innerHTML =
+                        `<small><i class="fa fa-calendar"></i> ${item.date}</small>`;
+                    detailEl.appendChild(p);
+                }
+
+                /* ISI KONTEN (SMART RENDER) */
+                renderContent(detailEl, item.content);
+
+                /* FILE DOWNLOAD */
+                if (Array.isArray(item.files) && item.files.length > 0) {
+                    const hr = document.createElement("hr");
+                    detailEl.appendChild(hr);
+
+                    const h3 = document.createElement("h3");
+                    h3.innerHTML =
+                        `<i class="fa fa-download"></i> File Download`;
+                    detailEl.appendChild(h3);
+
+                    const ul = document.createElement("ul");
+
+                    item.files.forEach(f => {
+                        if (f.path && f.label) {
+                            const li = document.createElement("li");
+                            const a = document.createElement("a");
+                            a.href = `assets/uploads/${f.path}`;
+                            a.textContent = f.label;
+                            a.setAttribute("download", "");
+                            li.appendChild(a);
+                            ul.appendChild(li);
+                        }
+                    });
+
+                    detailEl.appendChild(ul);
+                }
+            })
+            .catch(err => {
+                titleEl.textContent = "Terjadi Kesalahan";
+                detailEl.textContent = "Gagal memuat konten.";
+                console.error(err);
+            });
+    }
+</script>
+
+</body>
+</html>

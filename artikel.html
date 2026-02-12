@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artikel – msanet</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="wrapper nav-container">
+
+        <div class="brand">
+            <i class="fa-solid fa-globe"></i>
+            <span>msanet</span>
+        </div>
+
+        <ul class="menu" id="menu">
+            <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+            <li><a class="active" href="artikel.html"><i class="fa fa-newspaper"></i> Artikel</a></li>
+            <li><a href="kategori.html"><i class="fa fa-folder"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa fa-envelope"></i> Kontak</a></li>
+        </ul>
+
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+
+    </div>
+</nav>
+
+<!-- BANNER -->
+<section class="banner">
+    <div class="wrapper">
+        <h2>Artikel</h2>
+        <p>Kumpulan artikel edukasi & dokumentasi teknis</p>
+    </div>
+</section>
+
+<!-- MAIN -->
+<main class="wrapper main-content">
+    <div class="container">
+
+        <!-- CONTENT -->
+        <section class="content" id="articleList">
+            <p>Memuat artikel...</p>
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <!-- SEARCH (SIAP DIPAKAI NANTI) -->
+            <div class="box">
+                <h4><i class="fa fa-search"></i> Cari Artikel</h4>
+                <input type="text" id="searchInput" placeholder="Cari judul artikel..."
+                       style="width:100%;padding:8px;border-radius:6px;border:1px solid #cbd5e1;">
+            </div>
+
+            <!-- ARSIP -->
+            <div class="box">
+                <h4><i class="fa fa-calendar"></i> Arsip Artikel</h4>
+                <div id="archiveList">Memuat arsip...</div>
+            </div>
+
+        </aside>
+
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 msanet | Dibuat dengan ❤️</p>
+</footer>
+
+<!-- JS GLOBAL -->
+<script src="assets/js/script.js"></script>
+
+<!-- JS ARTIKEL -->
+<script>
+    const articleList = document.getElementById("articleList");
+    const archiveList = document.getElementById("archiveList");
+    const searchInput = document.getElementById("searchInput");
+
+    let allData = [];
+
+    fetch("data/content.json")
+        .then(res => {
+            if (!res.ok) throw new Error("Gagal memuat content.json");
+            return res.json();
+        })
+        .then(data => {
+            allData = data;
+            renderArticles(allData);
+            renderArchive(allData);
+        })
+        .catch(err => {
+            articleList.innerHTML = "<p>Gagal memuat artikel.</p>";
+            archiveList.innerHTML = "<p>Gagal memuat arsip.</p>";
+            console.error(err);
+        });
+
+    /* =============================
+       RENDER ARTIKEL
+       ============================= */
+    function renderArticles(data) {
+        if (!data.length) {
+            articleList.innerHTML = "<p>Tidak ada artikel.</p>";
+            return;
+        }
+
+        articleList.innerHTML = "";
+
+        data.forEach(item => {
+            const article = document.createElement("article");
+            article.className = "card";
+
+            article.innerHTML = `
+                <h3>${item.title}</h3>
+                <small><i class="fa fa-calendar"></i> ${item.date || "-"}</small>
+                <p>${item.excerpt || ""}</p>
+                <a href="detail.html?id=${item.id}">
+                    Baca selengkapnya →
+                </a>
+            `;
+
+            articleList.appendChild(article);
+        });
+    }
+
+    /* =============================
+       ARSIP PER TANGGAL (DROPDOWN)
+       ============================= */
+    function renderArchive(data) {
+        const grouped = {};
+
+        data.forEach(item => {
+            if (!item.date) return;
+            if (!grouped[item.date]) grouped[item.date] = [];
+            grouped[item.date].push(item);
+        });
+
+        const dates = Object.keys(grouped)
+            .sort((a, b) => new Date(b) - new Date(a));
+
+        archiveList.innerHTML = "";
+
+        dates.forEach(date => {
+            const wrap = document.createElement("div");
+
+            const header = document.createElement("div");
+            header.style.cursor = "pointer";
+            header.innerHTML = `<strong>▶ ${date}</strong>`;
+
+            const list = document.createElement("ul");
+            list.style.display = "none";
+            list.style.marginLeft = "15px";
+
+            grouped[date].forEach(item => {
+                const li = document.createElement("li");
+                li.innerHTML = `<a href="detail.html?id=${item.id}">${item.title}</a>`;
+                list.appendChild(li);
+            });
+
+            header.addEventListener("click", () => {
+                const open = list.style.display === "block";
+                list.style.display = open ? "none" : "block";
+                header.innerHTML = `<strong>${open ? "▶" : "▼"} ${date}</strong>`;
+            });
+
+            wrap.appendChild(header);
+            wrap.appendChild(list);
+            archiveList.appendChild(wrap);
+        });
+    }
+
+    /* =============================
+       SEARCH (REAL-TIME)
+       ============================= */
+    searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase();
+
+        const filtered = allData.filter(item =>
+            item.title.toLowerCase().includes(keyword)
+        );
+
+        renderArticles(filtered);
+    });
+</script>
+
+</body>
+</html>
