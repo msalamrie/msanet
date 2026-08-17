@@ -3,216 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Konten – msanet</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- CSS UTAMA -->
+    <meta name="description" content="Detail artikel msanet.">
+    <title>Detail Artikel — msanet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-
-    <!-- STYLE TAMBAHAN -->
-    <style>
-        /* LIST TEKS */
-        ol.text-list {
-            padding-left: 22px;
-            line-height: 1.8;
-            margin-top: 12px;
-        }
-
-        /* BLOK KODE (TEXT EDITOR LOOK) */
-        pre.code-box {
-            background: #0f172a;
-            color: #e5e7eb;
-            padding: 16px;
-            border-radius: 10px;
-            overflow-x: auto;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 12px;
-        }
-
-        pre.code-box code {
-            font-family: Consolas, Monaco, "Courier New", monospace;
-            white-space: pre;
-        }
-    </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="wrapper nav-container">
-        <div class="brand">
-            <i class="fa-solid fa-globe"></i>
-            <span>msanet</span>
-        </div>
-
-        <ul class="menu">
-            <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+        <a class="brand" href="index.html"><i class="fa-solid fa-globe"></i><span>msanet</span></a>
+        <ul class="menu" id="menu">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a class="active" href="artikel.html"><i class="fa-regular fa-newspaper"></i> Artikel</a></li>
+            <li><a href="kategori.html"><i class="fa-regular fa-folder-open"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa-regular fa-envelope"></i> Kontak</a></li>
         </ul>
+        <button class="menu-toggle" id="menuToggle" type="button"><i class="fa-solid fa-bars"></i></button>
     </div>
 </nav>
 
-<!-- BANNER -->
-<section class="banner">
-    <div class="wrapper">
-        <h2 id="contentTitle">Memuat...</h2>
+<header class="banner">
+    <div class="wrapper article-shell">
+        <a class="back-link" href="artikel.html"><i class="fa-solid fa-arrow-left"></i> Kembali ke artikel</a>
+        <h1 id="contentTitle">Memuat artikel...</h1>
+        <p id="contentExcerpt"></p>
     </div>
-</section>
+</header>
 
-<!-- MAIN -->
 <main class="wrapper main-content">
-    <article class="card" id="contentDetail">
-        <p>Memuat konten...</p>
-    </article>
+    <div class="article-shell">
+        <article class="card article-detail" id="contentDetail" aria-live="polite">
+            <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i>Memuat konten...</div>
+        </article>
+    </div>
 </main>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <p>© 2026 msanet</p>
-</footer>
-
-<!-- JS GLOBAL -->
+<footer class="footer"><div class="wrapper"><p>© 2026 msanet.</p><p><a href="artikel.html">Artikel lainnya</a></p></div></footer>
 <script src="assets/js/script.js"></script>
-
-<!-- JS DETAIL -->
 <script>
+(() => {
     const params = new URLSearchParams(window.location.search);
     const contentId = params.get("id");
-
     const titleEl = document.getElementById("contentTitle");
+    const excerptEl = document.getElementById("contentExcerpt");
     const detailEl = document.getElementById("contentDetail");
 
-    /* ================== UTIL ================== */
-    function isCodeLine(line) {
-        return (
-            /<\/?[a-z][\s\S]*>/i.test(line) ||     // HTML
-            /console\.log/.test(line) ||
-            /function\s*\(/.test(line) ||
-            /=>/.test(line) ||
-            /{.*}/.test(line) ||
-            /;/.test(line)
-        );
+    function looksLikeCode(block) {
+        const value = block.trim();
+        if (!value) return false;
+        return /(^|\n)\s*(ipconfig|ifconfig|ip\s+addr|ping\s+|git\s+|npm\s+|docker\s+|curl\s+|sudo\s+|SELECT\s+|INSERT\s+|UPDATE\s+)/i.test(value)
+            || /^\d{1,3}(\.\d{1,3}){3}(\/\d{1,2})?$/m.test(value)
+            || /<\/?[a-z][\s\S]*>/i.test(value)
+            || /console\.log|function\s+\w*\s*\(|=>|\{[\s\S]*\}|;\s*$/m.test(value);
     }
 
-    function renderContent(container, content) {
-        if (!content) {
-            container.textContent = "Tidak ada isi konten.";
+    function looksLikeHeading(block) {
+        const value = block.trim();
+        return !value.includes("\n") && value.length <= 72 && value.split(/\s+/).length >= 2 && !/[.!?;:]$/.test(value) && !looksLikeCode(value);
+    }
+
+    function renderBody(content) {
+        const body = document.createElement("div");
+        body.className = "article-body";
+        const blocks = String(content || "").replace(/\r/g, "").split(/\n\s*\n+/).map(v => v.trim()).filter(Boolean);
+
+        if (!blocks.length) {
+            body.innerHTML = "<p>Tidak ada isi konten.</p>";
+            return body;
+        }
+
+        blocks.forEach((block, index) => {
+            if (looksLikeCode(block)) {
+                const pre = document.createElement("pre");
+                pre.className = "code-box";
+                const code = document.createElement("code");
+                code.textContent = block;
+                pre.appendChild(code);
+                body.appendChild(pre);
+                return;
+            }
+
+            if (looksLikeHeading(block) && index !== 0) {
+                const heading = document.createElement("h2");
+                heading.textContent = block;
+                body.appendChild(heading);
+                return;
+            }
+
+            const lines = block.split("\n").filter(Boolean);
+            if (lines.length > 1 && looksLikeHeading(lines[0])) {
+                const heading = document.createElement(index === 0 ? "h2" : "h2");
+                heading.textContent = lines.shift().trim();
+                body.appendChild(heading);
+            }
+            lines.forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = line.trim();
+                body.appendChild(p);
+            });
+        });
+        return body;
+    }
+
+    async function loadDetail() {
+        if (!contentId) {
+            titleEl.textContent = "Artikel tidak ditemukan";
+            excerptEl.textContent = "ID artikel tidak tersedia.";
+            detailEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-link-slash"></i>Link artikel tidak lengkap.</div>';
             return;
         }
 
-        const lines = content.split("\n");
-        let textList = document.createElement("ol");
-        textList.className = "text-list";
-        let codeBuffer = [];
-
-        function flushText() {
-            if (textList.children.length > 0) {
-                container.appendChild(textList);
-                textList = document.createElement("ol");
-                textList.className = "text-list";
+        try {
+            const data = await window.msanet.loadContent();
+            const item = data.find(entry => String(entry.id) === String(contentId));
+            if (!item) {
+                titleEl.textContent = "Artikel tidak ditemukan";
+                excerptEl.textContent = "Konten yang Anda cari tidak tersedia.";
+                detailEl.innerHTML = '<div class="empty-state"><i class="fa-regular fa-face-frown"></i>Artikel tidak ditemukan.</div>';
+                return;
             }
+
+            document.title = `${item.title} — msanet`;
+            titleEl.textContent = item.title || "Tanpa judul";
+            excerptEl.textContent = item.excerpt || "";
+            detailEl.innerHTML = "";
+
+            const meta = document.createElement("div");
+            meta.className = "article-meta";
+            const date = document.createElement("span");
+            date.innerHTML = '<i class="fa-regular fa-calendar"></i>';
+            date.append(document.createTextNode(` ${window.msanet.formatDate(item.date)}`));
+            const category = document.createElement("span");
+            category.innerHTML = '<i class="fa-regular fa-folder"></i>';
+            category.append(document.createTextNode(` ${item.category || "Umum"}`));
+            meta.append(date, category);
+            detailEl.append(meta, renderBody(item.content));
+
+            if (Array.isArray(item.files) && item.files.length) {
+                const panel = document.createElement("section");
+                panel.className = "download-panel";
+                const heading = document.createElement("h3");
+                heading.textContent = "File download";
+                const list = document.createElement("ul");
+                list.className = "download-list";
+                item.files.forEach(file => {
+                    if (!file?.path || !file?.label) return;
+                    const li = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = `assets/uploads/${file.path}`;
+                    link.setAttribute("download", "");
+                    link.innerHTML = '<i class="fa-solid fa-download"></i>';
+                    link.append(document.createTextNode(file.label));
+                    li.appendChild(link);
+                    list.appendChild(li);
+                });
+                panel.append(heading, list);
+                detailEl.appendChild(panel);
+            }
+        } catch (error) {
+            titleEl.textContent = "Terjadi kesalahan";
+            excerptEl.textContent = "Konten belum dapat dimuat.";
+            detailEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Gagal memuat artikel. Pastikan website dijalankan melalui web server/hosting.</div>';
+            console.error(error);
         }
-
-        function flushCode() {
-            if (codeBuffer.length > 0) {
-                const pre = document.createElement("pre");
-                pre.className = "code-box";
-
-                const code = document.createElement("code");
-                code.textContent = codeBuffer.join("\n");
-
-                pre.appendChild(code);
-                container.appendChild(pre);
-                codeBuffer = [];
-            }
-        }
-
-        lines.forEach(line => {
-            if (isCodeLine(line)) {
-                flushText();
-                codeBuffer.push(line);
-            } else if (line.trim() !== "") {
-                flushCode();
-                const li = document.createElement("li");
-                li.textContent = line;
-                textList.appendChild(li);
-            }
-        });
-
-        flushCode();
-        flushText();
     }
 
-    /* ================== LOAD DATA ================== */
-    if (!contentId) {
-        titleEl.textContent = "Konten tidak ditemukan";
-        detailEl.textContent = "ID konten tidak tersedia.";
-    } else {
-        fetch("data/content.json")
-            .then(res => {
-                if (!res.ok) throw new Error("Gagal memuat data");
-                return res.json();
-            })
-            .then(data => {
-                const item = data.find(d => d.id == contentId);
-
-                if (!item) {
-                    titleEl.textContent = "Konten tidak ditemukan";
-                    detailEl.textContent = "Konten tidak tersedia.";
-                    return;
-                }
-
-                titleEl.textContent = item.title;
-                detailEl.innerHTML = "";
-
-                /* TANGGAL */
-                if (item.date) {
-                    const p = document.createElement("p");
-                    p.innerHTML =
-                        `<small><i class="fa fa-calendar"></i> ${item.date}</small>`;
-                    detailEl.appendChild(p);
-                }
-
-                /* ISI KONTEN (SMART RENDER) */
-                renderContent(detailEl, item.content);
-
-                /* FILE DOWNLOAD */
-                if (Array.isArray(item.files) && item.files.length > 0) {
-                    const hr = document.createElement("hr");
-                    detailEl.appendChild(hr);
-
-                    const h3 = document.createElement("h3");
-                    h3.innerHTML =
-                        `<i class="fa fa-download"></i> File Download`;
-                    detailEl.appendChild(h3);
-
-                    const ul = document.createElement("ul");
-
-                    item.files.forEach(f => {
-                        if (f.path && f.label) {
-                            const li = document.createElement("li");
-                            const a = document.createElement("a");
-                            a.href = `assets/uploads/${f.path}`;
-                            a.textContent = f.label;
-                            a.setAttribute("download", "");
-                            li.appendChild(a);
-                            ul.appendChild(li);
-                        }
-                    });
-
-                    detailEl.appendChild(ul);
-                }
-            })
-            .catch(err => {
-                titleEl.textContent = "Terjadi Kesalahan";
-                detailEl.textContent = "Gagal memuat konten.";
-                console.error(err);
-            });
-    }
+    loadDetail();
+})();
 </script>
-
 </body>
 </html>
