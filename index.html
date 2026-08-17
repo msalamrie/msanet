@@ -3,135 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>msanet</title>
-
-    <!-- Font Awesome -->
+    <meta name="description" content="msanet - artikel dan dokumentasi praktis seputar website, jaringan, dan teknologi.">
+    <title>msanet — Belajar Teknologi Secara Praktis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="wrapper nav-container">
-
-        <div class="brand">
-            <i class="fa-solid fa-globe"></i>
-            <span>msanet</span>
-        </div>
-
+        <a class="brand" href="index.html" aria-label="msanet beranda">
+            <i class="fa-solid fa-globe"></i><span>msanet</span>
+        </a>
         <ul class="menu" id="menu">
-            <li><a class="active" href="index.html"><i class="fa fa-home"></i> Home</a></li>
-            <li><a href="artikel.html"><i class="fa fa-newspaper"></i> Artikel</a></li>
-            <li><a href="kategori.html"><i class="fa fa-folder"></i> Kategori</a></li>
-            <li><a href="kontak.html"><i class="fa fa-envelope"></i> Kontak</a></li>
+            <li><a class="active" href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="artikel.html"><i class="fa-regular fa-newspaper"></i> Artikel</a></li>
+            <li><a href="kategori.html"><i class="fa-regular fa-folder-open"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa-regular fa-envelope"></i> Kontak</a></li>
         </ul>
-
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fa-solid fa-bars"></i>
-        </div>
-
+        <button class="menu-toggle" id="menuToggle" type="button"><i class="fa-solid fa-bars"></i></button>
     </div>
 </nav>
 
-<!-- HERO / BANNER -->
-<section class="banner">
+<header class="banner">
     <div class="wrapper">
-        <h2>Belajar & Membangun Website dengan Cara yang Tepat</h2>
-        <p>Dokumentasi, artikel, dan panduan seputar pengembangan website modern</p>
-        <a href="artikel.html" class="btn-primary" style="display:inline-block;margin-top:10px;">
-            Lihat Semua Artikel →
-        </a>
+        <span class="category-badge" style="color:#dbeafe;background:rgba(255,255,255,.11);">Dokumentasi & Artikel Teknologi</span>
+        <h1 style="margin-top:14px;">Belajar teknologi dengan penjelasan yang ringkas dan bisa langsung dipraktikkan.</h1>
+        <p>Kumpulan panduan, catatan teknis, dan artikel yang dirancang agar mudah dicari, dibaca, dan diterapkan.</p>
+        <div class="hero-actions">
+            <a href="artikel.html" class="btn-primary"><i class="fa-regular fa-newspaper"></i> Jelajahi Artikel</a>
+            <a href="kontak.html" class="btn-secondary"><i class="fa-regular fa-paper-plane"></i> Hubungi Admin</a>
+        </div>
     </div>
-</section>
+</header>
 
-<!-- MAIN -->
 <main class="wrapper main-content">
     <div class="container">
-
-        <!-- CONTENT -->
         <section class="content">
-            <h2>Artikel Terbaru</h2>
-            <div id="latestContent">
-                <p>Memuat konten terbaru...</p>
+            <div class="section-heading">
+                <div>
+                    <h2>Artikel terbaru</h2>
+                    <p>Materi terbaru yang sudah tersedia di msanet.</p>
+                </div>
+                <a href="artikel.html">Lihat semua <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div id="latestContent" aria-live="polite">
+                <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i>Memuat artikel terbaru...</div>
             </div>
         </section>
 
-        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="box">
-                <h4><i class="fa fa-lightbulb"></i> Tentang msanet</h4>
-                <p>
-                    msanet adalah website berbagi pengetahuan seputar
-                    pembuatan website statis dan modern dengan pendekatan praktis.
-                </p>
+                <h4><i class="fa-regular fa-circle-question"></i> Tentang msanet</h4>
+                <p>Website berbagi pengetahuan teknologi dengan pendekatan sederhana, rapi, dan berorientasi praktik.</p>
             </div>
-
             <div class="box">
-                <h4><i class="fa fa-compass"></i> Navigasi</h4>
+                <h4><i class="fa-solid fa-compass"></i> Navigasi cepat</h4>
                 <ul>
-                    <li><a href="artikel.html">📚 Semua Artikel</a></li>
-                    <li><a href="kategori.html">📂 Kategori</a></li>
-                    <li><a href="kontak.html">✉️ Kontak</a></li>
+                    <li><a href="artikel.html"><i class="fa-solid fa-arrow-right"></i> Semua artikel</a></li>
+                    <li><a href="kategori.html"><i class="fa-solid fa-arrow-right"></i> Jelajahi kategori</a></li>
+                    <li><a href="kontak.html"><i class="fa-solid fa-arrow-right"></i> Kontak admin</a></li>
                 </ul>
             </div>
         </aside>
-
     </div>
 </main>
 
-<!-- FOOTER -->
 <footer class="footer">
-    <p>© 2026 msanet | Dibuat dengan ❤️</p>
+    <div class="wrapper">
+        <p>© 2026 msanet. Konten teknologi untuk belajar lebih praktis.</p>
+        <p><a href="admin/login.html"><i class="fa-solid fa-lock"></i> Admin</a></p>
+    </div>
 </footer>
 
-<!-- JS GLOBAL -->
 <script src="assets/js/script.js"></script>
-
-<!-- JS INDEX (LATEST ONLY) -->
 <script>
-    const latestContainer = document.getElementById("latestContent");
+(async () => {
+    const container = document.getElementById("latestContent");
+    try {
+        const data = await window.msanet.loadContent();
+        const latest = [...data]
+            .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+            .slice(0, 3);
 
-    fetch("data/content.json")
-        .then(res => {
-            if (!res.ok) throw new Error("Gagal memuat content.json");
-            return res.json();
-        })
-        .then(data => {
-            if (!data.length) {
-                latestContainer.innerHTML = "<p>Belum ada konten.</p>";
-                return;
-            }
-
-            // Urutkan terbaru
-            data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const latest = data.slice(0, 3); // ambil 3 terbaru
-            latestContainer.innerHTML = "";
-
-            latest.forEach(item => {
-                const card = document.createElement("article");
-                card.className = "card";
-
-                card.innerHTML = `
-                    <h3>${item.title}</h3>
-                    <small><i class="fa fa-calendar"></i> ${item.date || "-"}</small>
-                    <p>${item.excerpt || ""}</p>
-                    <a href="detail.html?id=${item.id}">
-                        Baca selengkapnya →
-                    </a>
-                `;
-
-                latestContainer.appendChild(card);
-            });
-        })
-        .catch(err => {
-            latestContainer.innerHTML = "<p>Gagal memuat konten.</p>";
-            console.error(err);
-        });
+        container.innerHTML = "";
+        if (!latest.length) {
+            container.innerHTML = '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>Belum ada artikel.</div>';
+            return;
+        }
+        latest.forEach(item => container.appendChild(window.msanet.createArticleCard(item)));
+    } catch (error) {
+        container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Artikel belum dapat dimuat. Pastikan website dijalankan melalui web server/hosting, bukan langsung dari file lokal.</div>';
+        console.error(error);
+    }
+})();
 </script>
-
 </body>
 </html>
