@@ -3,81 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kategori – msanet</title>
-
-    <!-- Font Awesome -->
+    <title>Kategori — msanet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
-
-    <style>
-        .coming-soon {
-            text-align: center;
-            padding: 100px 20px;
-        }
-
-        .coming-soon h1 {
-            font-size: 56px;
-            font-weight: 800;
-            color: #1e3a8a;
-            margin-bottom: 20px;
-        }
-
-        .coming-soon p {
-            font-size: 18px;
-            color: #64748b;
-        }
-
-        @media (max-width: 768px) {
-            .coming-soon h1 {
-                font-size: 40px;
-            }
-        }
-    </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="wrapper nav-container">
-
-        <div class="brand">
-            <i class="fa-solid fa-globe"></i>
-            <span>msanet</span>
-        </div>
-
+        <a class="brand" href="index.html"><i class="fa-solid fa-globe"></i><span>msanet</span></a>
         <ul class="menu" id="menu">
-            <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
-            <li><a href="artikel.html"><i class="fa fa-newspaper"></i> Artikel</a></li>
-            <li><a class="active" href="kategori.html"><i class="fa fa-folder"></i> Kategori</a></li>
-            <li><a href="kontak.html"><i class="fa fa-envelope"></i> Kontak</a></li>
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="artikel.html"><i class="fa-regular fa-newspaper"></i> Artikel</a></li>
+            <li><a class="active" href="kategori.html"><i class="fa-regular fa-folder-open"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa-regular fa-envelope"></i> Kontak</a></li>
         </ul>
-
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fa-solid fa-bars"></i>
-        </div>
-
+        <button class="menu-toggle" id="menuToggle" type="button"><i class="fa-solid fa-bars"></i></button>
     </div>
 </nav>
-
-<!-- MAIN -->
+<header class="banner"><div class="wrapper"><h1>Kategori</h1><p>Temukan artikel berdasarkan kelompok materi yang tersedia.</p></div></header>
 <main class="wrapper main-content">
-    <div class="container">
-        <div class="coming-soon">
-            <h1>COMING SOON!!!</h1>
-            <p>Fitur kategori sedang dalam pengembangan.</p>
-        </div>
+    <div class="section-heading"><div><h2>Topik tersedia</h2><p>Kategori dibuat otomatis dari data artikel.</p></div></div>
+    <div class="category-grid" id="categoryGrid" aria-live="polite">
+        <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i>Memuat kategori...</div>
     </div>
 </main>
-
-<!-- FOOTER -->
-<footer class="footer">
-    <p>© 2026 msanet | Dibuat dengan ❤️</p>
-</footer>
-
-<!-- JS GLOBAL -->
+<footer class="footer"><div class="wrapper"><p>© 2026 msanet.</p><p><a href="artikel.html">Lihat semua artikel</a></p></div></footer>
 <script src="assets/js/script.js"></script>
-
+<script>
+(async () => {
+    const grid = document.getElementById("categoryGrid");
+    try {
+        const data = await window.msanet.loadContent();
+        const groups = data.reduce((acc, item) => {
+            const category = (item.category || "Umum").trim() || "Umum";
+            acc[category] = (acc[category] || 0) + 1;
+            return acc;
+        }, {});
+        grid.innerHTML = "";
+        const entries = Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0], "id"));
+        if (!entries.length) {
+            grid.innerHTML = '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>Belum ada kategori.</div>';
+            return;
+        }
+        entries.forEach(([name, count]) => {
+            const card = document.createElement("a");
+            card.className = "category-card";
+            card.href = `artikel.html?q=${encodeURIComponent(name)}`;
+            const icon = document.createElement("i");
+            icon.className = "fa-regular fa-folder-open";
+            const body = document.createElement("div");
+            const title = document.createElement("h3");
+            title.textContent = name;
+            const info = document.createElement("p");
+            info.textContent = `${count} artikel`;
+            body.append(title, info);
+            card.append(icon, body);
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Kategori belum dapat dimuat.</div>';
+        console.error(error);
+    }
+})();
+</script>
 </body>
 </html>
