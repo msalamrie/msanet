@@ -3,196 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artikel – msanet</title>
-
-    <!-- Font Awesome -->
+    <meta name="description" content="Daftar artikel dan dokumentasi teknologi di msanet.">
+    <title>Artikel — msanet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="wrapper nav-container">
-
-        <div class="brand">
-            <i class="fa-solid fa-globe"></i>
-            <span>msanet</span>
-        </div>
-
+        <a class="brand" href="index.html"><i class="fa-solid fa-globe"></i><span>msanet</span></a>
         <ul class="menu" id="menu">
-            <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
-            <li><a class="active" href="artikel.html"><i class="fa fa-newspaper"></i> Artikel</a></li>
-            <li><a href="kategori.html"><i class="fa fa-folder"></i> Kategori</a></li>
-            <li><a href="kontak.html"><i class="fa fa-envelope"></i> Kontak</a></li>
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a class="active" href="artikel.html"><i class="fa-regular fa-newspaper"></i> Artikel</a></li>
+            <li><a href="kategori.html"><i class="fa-regular fa-folder-open"></i> Kategori</a></li>
+            <li><a href="kontak.html"><i class="fa-regular fa-envelope"></i> Kontak</a></li>
         </ul>
-
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fa-solid fa-bars"></i>
-        </div>
-
+        <button class="menu-toggle" id="menuToggle" type="button"><i class="fa-solid fa-bars"></i></button>
     </div>
 </nav>
 
-<!-- BANNER -->
-<section class="banner">
+<header class="banner">
     <div class="wrapper">
-        <h2>Artikel</h2>
-        <p>Kumpulan artikel edukasi & dokumentasi teknis</p>
+        <h1>Artikel & dokumentasi</h1>
+        <p>Cari materi berdasarkan judul, ringkasan, atau kategori.</p>
     </div>
-</section>
+</header>
 
-<!-- MAIN -->
 <main class="wrapper main-content">
     <div class="container">
-
-        <!-- CONTENT -->
-        <section class="content" id="articleList">
-            <p>Memuat artikel...</p>
+        <section class="content">
+            <div class="section-heading">
+                <div><h2>Semua artikel</h2><p id="resultInfo">Memuat data...</p></div>
+            </div>
+            <div id="articleList" aria-live="polite">
+                <div class="empty-state"><i class="fa-solid fa-circle-notch fa-spin"></i>Memuat artikel...</div>
+            </div>
         </section>
 
-        <!-- SIDEBAR -->
         <aside class="sidebar">
-
-            <!-- SEARCH (SIAP DIPAKAI NANTI) -->
             <div class="box">
-                <h4><i class="fa fa-search"></i> Cari Artikel</h4>
-                <input type="text" id="searchInput" placeholder="Cari judul artikel..."
-                       style="width:100%;padding:8px;border-radius:6px;border:1px solid #cbd5e1;">
+                <h4><i class="fa-solid fa-magnifying-glass"></i> Cari artikel</h4>
+                <div class="search-field">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="searchInput" placeholder="Ketik kata kunci..." autocomplete="off">
+                </div>
             </div>
-
-            <!-- ARSIP -->
             <div class="box">
-                <h4><i class="fa fa-calendar"></i> Arsip Artikel</h4>
+                <h4><i class="fa-regular fa-calendar"></i> Arsip</h4>
                 <div id="archiveList">Memuat arsip...</div>
             </div>
-
         </aside>
-
     </div>
 </main>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <p>© 2026 msanet | Dibuat dengan ❤️</p>
-</footer>
-
-<!-- JS GLOBAL -->
+<footer class="footer"><div class="wrapper"><p>© 2026 msanet.</p><p><a href="index.html">Kembali ke beranda</a></p></div></footer>
 <script src="assets/js/script.js"></script>
-
-<!-- JS ARTIKEL -->
 <script>
+(async () => {
     const articleList = document.getElementById("articleList");
     const archiveList = document.getElementById("archiveList");
     const searchInput = document.getElementById("searchInput");
-
+    const resultInfo = document.getElementById("resultInfo");
     let allData = [];
 
-    fetch("data/content.json")
-        .then(res => {
-            if (!res.ok) throw new Error("Gagal memuat content.json");
-            return res.json();
-        })
-        .then(data => {
-            allData = data;
-            renderArticles(allData);
-            renderArchive(allData);
-        })
-        .catch(err => {
-            articleList.innerHTML = "<p>Gagal memuat artikel.</p>";
-            archiveList.innerHTML = "<p>Gagal memuat arsip.</p>";
-            console.error(err);
-        });
-
-    /* =============================
-       RENDER ARTIKEL
-       ============================= */
     function renderArticles(data) {
+        articleList.innerHTML = "";
+        resultInfo.textContent = `${data.length} artikel ditemukan`;
         if (!data.length) {
-            articleList.innerHTML = "<p>Tidak ada artikel.</p>";
+            articleList.innerHTML = '<div class="empty-state"><i class="fa-regular fa-face-frown"></i>Tidak ada artikel yang cocok dengan pencarian.</div>';
             return;
         }
-
-        articleList.innerHTML = "";
-
-        data.forEach(item => {
-            const article = document.createElement("article");
-            article.className = "card";
-
-            article.innerHTML = `
-                <h3>${item.title}</h3>
-                <small><i class="fa fa-calendar"></i> ${item.date || "-"}</small>
-                <p>${item.excerpt || ""}</p>
-                <a href="detail.html?id=${item.id}">
-                    Baca selengkapnya →
-                </a>
-            `;
-
-            articleList.appendChild(article);
-        });
+        data.forEach(item => articleList.appendChild(window.msanet.createArticleCard(item)));
     }
 
-    /* =============================
-       ARSIP PER TANGGAL (DROPDOWN)
-       ============================= */
     function renderArchive(data) {
-        const grouped = {};
-
-        data.forEach(item => {
-            if (!item.date) return;
-            if (!grouped[item.date]) grouped[item.date] = [];
-            grouped[item.date].push(item);
-        });
-
-        const dates = Object.keys(grouped)
-            .sort((a, b) => new Date(b) - new Date(a));
-
+        const grouped = data.reduce((acc, item) => {
+            const key = item.date || "Tanpa tanggal";
+            (acc[key] ||= []).push(item);
+            return acc;
+        }, {});
+        const dates = Object.keys(grouped).sort((a, b) => new Date(b || 0) - new Date(a || 0));
         archiveList.innerHTML = "";
-
-        dates.forEach(date => {
+        if (!dates.length) {
+            archiveList.textContent = "Belum ada arsip.";
+            return;
+        }
+        dates.forEach((date, index) => {
             const wrap = document.createElement("div");
-
-            const header = document.createElement("div");
-            header.style.cursor = "pointer";
-            header.innerHTML = `<strong>▶ ${date}</strong>`;
-
+            wrap.className = "archive-item";
+            const button = document.createElement("button");
+            button.className = "archive-toggle";
+            button.type = "button";
+            button.innerHTML = `<span>${window.msanet.formatDate(date)}</span><i class="fa-solid fa-chevron-down"></i>`;
             const list = document.createElement("ul");
-            list.style.display = "none";
-            list.style.marginLeft = "15px";
-
+            list.className = "archive-links";
+            list.hidden = index !== 0;
             grouped[date].forEach(item => {
                 const li = document.createElement("li");
-                li.innerHTML = `<a href="detail.html?id=${item.id}">${item.title}</a>`;
+                const a = document.createElement("a");
+                a.href = `detail.html?id=${encodeURIComponent(item.id)}`;
+                a.textContent = item.title;
+                li.appendChild(a);
                 list.appendChild(li);
             });
-
-            header.addEventListener("click", () => {
-                const open = list.style.display === "block";
-                list.style.display = open ? "none" : "block";
-                header.innerHTML = `<strong>${open ? "▶" : "▼"} ${date}</strong>`;
+            button.addEventListener("click", () => {
+                list.hidden = !list.hidden;
+                button.querySelector("i").className = list.hidden ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
             });
-
-            wrap.appendChild(header);
-            wrap.appendChild(list);
+            wrap.append(button, list);
             archiveList.appendChild(wrap);
         });
     }
 
-    /* =============================
-       SEARCH (REAL-TIME)
-       ============================= */
+    try {
+        allData = await window.msanet.loadContent();
+        allData.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+        searchInput.value = initialQuery;
+        const initialKeyword = initialQuery.trim().toLocaleLowerCase("id-ID");
+        const initialData = initialKeyword ? allData.filter(item => [item.title, item.excerpt, item.category]
+            .filter(Boolean).some(value => value.toLocaleLowerCase("id-ID").includes(initialKeyword))) : allData;
+        renderArticles(initialData);
+        renderArchive(allData);
+    } catch (error) {
+        articleList.innerHTML = '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Gagal memuat artikel. Jalankan website melalui web server/hosting.</div>';
+        archiveList.textContent = "Gagal memuat arsip.";
+        resultInfo.textContent = "Data tidak tersedia";
+        console.error(error);
+    }
+
     searchInput.addEventListener("input", () => {
-        const keyword = searchInput.value.toLowerCase();
-
-        const filtered = allData.filter(item =>
-            item.title.toLowerCase().includes(keyword)
-        );
-
+        const keyword = searchInput.value.trim().toLocaleLowerCase("id-ID");
+        const filtered = allData.filter(item => [item.title, item.excerpt, item.category]
+            .filter(Boolean)
+            .some(value => value.toLocaleLowerCase("id-ID").includes(keyword)));
         renderArticles(filtered);
     });
+})();
 </script>
-
 </body>
 </html>
